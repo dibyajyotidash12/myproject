@@ -7,20 +7,21 @@
 
         <div class="content2">
             <div class="grids-heading gallery-heading signup-heading">
-                <h2>Login</h2>
+                <h2>Sign Up</h2>
             </div>
-            {% if AddNotoficaltion != "" %}
-                <div class="col-sm-12" style="background:#ac2925;color: #ffffdd;padding: 5px;text-align: center;margin: 10px;">{{ AddNotoficaltion }}</div>
-            {% endif %}
+
             <form action="recievelogindata" method="post">
-                <input type="text" name="Username" value="Username" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Username';}">
-                <input type="password" name="Password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
-                <input type="submit" class="register" value="Login">
+                <input type="text" name="username" placeholder="Username">
+                <input type="text" name="name" placeholder="Name" >
+                <input type="text" name="contact" placeholder="Contact" >
+                <input type="password" name="Password" placeholder="Password" >
+                <input type="submit" class="register" value="Register">
+
             </form>
             <div class="signin-text">
 
                 <div class="text-right">
-                    <p><a href="createuser"> Create New Account</a></p>
+                    <p><a href="/"> Login Here</a></p>
                 </div>
                 <div class="clearfix"> </div>
             </div>

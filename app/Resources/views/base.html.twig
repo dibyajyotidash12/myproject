@@ -2,11 +2,77 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
-    <body>
+    <body class="dashboard-page">
+    <nav class="main-menu">
+        <ul>
+            <li>
+                <a href="recievelogindata">
+                    <i class="fa fa-home nav_icon"></i>
+                    <span class="nav-text">
+					Dashboard
+					</span>
+                </a>
+            </li>
+            <li class="has-subnav">
+                <a href="javascript:;">
+                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                    <span class="nav-text">
+					Customers
+				</span>
+                    <i class="icon-angle-right"></i><i class="icon-angle-down"></i>
+                </a>
+                <ul>
+                    <li>
+                        <a class="subnav-text" href="AddNewCustomer">
+                            Customer Addtion
+                        </a>
+                    </li>
+                    <li>
+                        <a class="subnav-text" href="SearchCustomer">
+                            Search Customer
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="has-subnav">
+                <a href="javascript:;">
+                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                    <span class="nav-text">
+					Activity
+				</span>
+                    <i class="icon-angle-right"></i><i class="icon-angle-down"></i>
+                </a>
+                <ul>
+                    <li>
+                        <a class="subnav-text" href="AddNewActivity">
+                            Activity Addtion
+                        </a>
+                    </li>
+                    <li>
+                        <a class="subnav-text" href="customerprofile">
+                            Customer Profile
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+        </ul>
+        <ul class="logout">
+            <li>
+                <a href="login.html">
+                    <i class="icon-off nav-icon"></i>
+                    <span class="nav-text">
+			Logout
+			</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>
