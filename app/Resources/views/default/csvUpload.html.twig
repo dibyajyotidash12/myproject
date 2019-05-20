@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}
+    Activity Addtion
+{% endblock %}
 {% block menu %}
     <script>
         var theme = $.cookie('protonTheme') || 'default';
@@ -89,8 +91,8 @@
 
     </nav>
 {% endblock %}
-
 {% block body %}
+
 
     <section class="wrapper scrollable">
         <nav class="user-menu">
@@ -133,16 +135,45 @@
             <div class="clearfix"> </div>
         </section>
         <div class="main-grid">
-            {% if displayPost is defined  %}
-            {% for post in displayPost  %}
-            <div style="border: 1px solid #1e252f;width: 50%;margin-bottom: 30px;">
-                <div style="height: 1000px;"><img src="{{ asset("postimage/" ~ post.postImage) }}" style="width: 100%;"></div>
-                <div >{{ post.postData }}</div>
-                <div>Date:{{ post.postDate|date }}</div>
-            </div>
-            {% endfor %}
-            {% endif %}
+            <div class="agile-grids">
+                <!-- input-forms -->
+                <div class="grids">
 
+                    <div class="panel panel-widget forms-panel">
+                        <div class="progressbar-heading general-heading">
+                            <h4>Upload CSV File:</h4>
+                        </div>
+
+                        <div class="forms">
+                            <h3 class="title1"></h3>
+                            {% if notification is defined and notification =="1"  %}
+                            <div style="margin: 20px;padding: 10px;background: #0e8f9f;color: #ffffdd;">CSV Uploaded</div>
+                            {% endif %}
+                            {% if notification is defined and notification =="2"  %}
+                                <div style="margin: 20px;padding: 10px;color: #ffffdd;background: #2CCCAB;">Upload Error</div>
+                            {% endif %}
+
+                                <form action="{{ path("app_default_csv_upload") }}" method="post" style="padding: 20px;" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">CSV File:</label>
+
+                                        <input type="file" name="csv_file" class="form-control" >
+                                    </div>
+
+                                    <button type="submit" class="btn btn-default w3ls-button">Update</button>
+                                </form>
+
+
+
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <!-- //input-forms -->
+            </div>
         </div>
         <!-- footer -->
         <div class="footer">
@@ -186,11 +217,4 @@
             });
         });
     </script>
-    <!-- charts -->
-    <script src="{{ asset('js/raphael-min.js') }}"></script>
-    <script src="{{ asset('js/morris.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('css/morris.css') }}">
-    <!-- //charts -->
-    <!--skycons-icons-->
-    <script src="{{ asset('js/skycons.js') }}"></script>
 {% endblock %}

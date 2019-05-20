@@ -2,16 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Document\activity;
-use AppBundle\Document\customer;
-use AppBundle\Document\User;
+use AppBundle\Document\student;
+use AppBundle\Service\register;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Response;
-
-
 
 class DefaultController extends Controller
 {
@@ -21,249 +16,275 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
 
-        return $this->render('default/index.html.twig',  array('AddNotoficaltion' => ""));
+        return $this->render('default/index.html.twig', [
+            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+        ]);
     }
     /**
-     * @Route("/createuser", name="createuser")
+     * @Route("/signUp", name="app_default_signup")
      */
-    public function showAction(Request $request)
+    public function signUpAction(Request $request)
     {
-        if($request->get('username')&&$request->get('name')&&$request->get('contact')&&$request->get('Password')){
-            $user = new User();
-            $user->setUsername($request->get('username'));
-            $user->setPassword($request->get('Password'));
-            $user->setName($request->get('name'));
-            $user->setContact($request->get('contact'));
+        if( $request-> get('userId') &&
+            ("" != $request-> get('userId')) &&
+            $request-> get('studentName') &&
+            ("" != $request-> get('studentName')) &&
+            $request-> get('studentContact') &&
+            ("" != $request-> get('studentContact')) &&
+            $request-> get('pass') &&
+            ("" != $request-> get('pass'))){
 
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($user);
-            $dm->flush();
-            return $this->render('default/index.html.twig',  array('AddNotoficaltion' => "Registration Done"));
-        }
-
-        else{
-            return $this->render('default/createuser.html.twig', [
-                'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-            ]);
-        }
-
-    }
-    /**
-     * @Route("/recievelogindata", name="recievelogindata")
-     */
-    public function recievelogindata(Request $request)
-    {   $session = $request->getSession();
-        $givenusername=$request->get('Username');
-        $givenPassword=$request->get('Password');
-
-
-        $userobject = $this->get('doctrine_mongodb')
-            ->getRepository('AppBundle:User')
-            ->findOneby([
-                'username' => $givenusername
-            ]);
-        if($userobject!=null&&$userobject->getPassword() == $givenPassword){
-
-            $session->set('current_user', $givenusername);
-
-            $UserObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:User')
-                ->findOneby(array('username' => $session->get("current_user")));
-
-
-            $ActivityObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:activity')
-                ->createQueryBuilder()
-                ->field('userId')->equals($UserObject->getId())
-                ->field('NextActivityTime')->gte(new \MongoDate())
-                ->getQuery()
-                ->execute();
-
-
-
-            return $this->render('default/dashboard.html.twig', array('ActivityData' => $ActivityObject));
-        }
-        elseif($session->get("current_user")!=null){
-            $UserObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:User')
-                ->findOneby(array('username' => $session->get("current_user")));
-
-            $ActivityObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:activity')
-                ->findby(array('userId' => $UserObject->getId()));
-
-            return $this->render('default/dashboard.html.twig', array('ActivityData' => $ActivityObject));
-        }
-        else{
-            return $this->render('default/index.html.twig',  array('AddNotoficaltion' => "Invalid Credential"));
-        }
-
-
-    }
-    /**
-     * @Route("/AddNewCustomer", name="AddNewCustomer")
-     */
-    public function AddNewCustomer(Request $request)
-    {
-        $AddNotoficaltion ="";
-        if($request->get('customer_name')&&$request->get('customer_mail')&&$request->get('customer_contact')&&$request->get('customer_address')&&$request->get('customer_status')){
-            $CustomerName=$request->get('customer_name');
-            $CustomerMail=$request->get('customer_mail');
-            $CustomerContact=$request->get('customer_contact');
-            $CustomerAddress=$request->get('customer_address');
-            $CustomerStatus=$request->get('customer_status');
-            $customer = new customer();
-            $customer->setName($CustomerName);
-            $customer->setMail($CustomerMail);
-            $customer->setContact($CustomerContact);
-            $customer->setAddress($CustomerAddress);
-            $customer->setStatus($CustomerStatus);
-
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($customer);
-            $dm->flush();
-            $AddNotoficaltion="Customer Added";
-        }
-
-
-            return $this->render('default/cutomerform.html.twig', array('AddNotoficaltion' => $AddNotoficaltion));
-
-
-
-    }
-    /**
-     * @Route("/SearchCustomer", name="SearchCustomer")
-     */
-    public function SearchCustomer(Request $request)
-    {
-
-        if($request->get('customer_name')&&$request->get('customer_mail')){
-            $CustomerName=$request->get('customer_name');
-            $CustomerMail=$request->get('customer_mail');
-            $CutomerObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:customer')
-                ->findOneby(array('Name' => $CustomerName, 'Mail' => $CustomerMail));
-            $ExtractionType=1;
-
-        }
-        else{
-            $CutomerObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:customer')
-                ->findall();
-            $ExtractionType=2;
-        }
-
-
-
-        return $this->render('default/SearchCustomer.html.twig',array('CutomerData' => $CutomerObject,'ExtractionType'=>$ExtractionType));
-
-
-
-    }
-    /**
-     * @Route("/AddNewActivity", name="AddNewActivity")
-     */
-    public function AddNewActivity(Request $request)
-    {
-
-        $AddNotoficaltion ="";
-        $session = $request->getSession();
-
-        if($request->get('customer')&&$request->get('activity_type')&&$request->get('activity_time')&&$request->get('activity_description')){
-
-
-
-            $UserObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:User')
-                ->findOneby(array('username' => $session->get("current_user")));
-
-            $CustomerObject = $this->get('doctrine_mongodb')
-                ->getRepository('AppBundle:customer')
-                ->findOneby(array('id' => $request->get('customer')));
-
-            $Activity = new activity();
-            $Activity->setUserId($UserObject->getId());
-            $Activity->setUserName($UserObject->getName());
-            $Activity->setCustomerId($request->get('customer'));
-            $Activity->setCustomerName($CustomerObject->getName());
-            $Activity->setActivityType($request->get('activity_type'));
-            $Activity->setTime($request->get('activity_time'));
-            $Activity->setDescription($request->get('activity_description'));
-            if($request->get('next_activity_description')&&$request->get('next_activity_time')){
-                $Activity->setNextActivityDescription($request->get('next_activity_description'));
-                $Activity->setNextActivityTime($request->get('next_activity_time'));
+            $student_info = array(  'userId' => $request-> get('userId'),
+                                    'studentName' => $request-> get('studentName'),
+                                    'studentContact' => $request-> get('studentContact'),
+                                    'pass' => $request-> get('pass'));
+            $reg_student = $this->get('registration');
+            if($reg_student->studentRegister($student_info)){
+                $saveStatus = 1;
             }
-            //var_dump($Activity);
-            //die();
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($Activity);
-            $dm->flush();
-            $AddNotoficaltion="New Activity Added";
+            else{
+                $saveStatus = 2;
+            }
+
+
+            return $this->render('default/index.html.twig', array( 'message' => $saveStatus ));
+
         }
-        $CutomerObject = $this->get('doctrine_mongodb')
-            ->getRepository('AppBundle:customer')
-            ->findall();
-
-        return $this->render('default/activityform.html.twig', array('AddNotoficaltion' => $AddNotoficaltion,'CutomerData'=>$CutomerObject));
-
-
+        else{
+            return $this->render('default/signup.html.twig');
+        }
 
     }
     /**
-     * @Route("/customerprofile", name="customerprofile")
+     * @Route("/login", name="app_default_login")
      */
-    public function customerprofile(Request $request)
+    public function loginAction(Request $request)
     {
         $session = $request->getSession();
-        $UserObject = $this->get('doctrine_mongodb')
-            ->getRepository('AppBundle:User')
-            ->findOneby(array('username' => $session->get("current_user")));
+        if( $request-> get('userId') &&
+            ("" != $request-> get('userId')) &&
+            $request-> get('pass') &&
+            ("" != $request-> get('pass'))){
 
-        if($request->get('activity_type')){
-            $ActivityType=$request->get('activity_type');
-            if($ActivityType==1){
-                $ActivityObject = $this->get('doctrine_mongodb')
-                    ->getRepository('AppBundle:activity')
-                    ->createQueryBuilder()
-                    ->field('userId')->equals($UserObject->getId())
-                    ->field('Time')->lte(new \MongoDate())
-                    ->getQuery()
-                    ->execute();
+            $student_info = array(  'userId' => $request-> get('userId'),
+                'pass' => $request-> get('pass'));
+            $reg_student = $this->get('registration');
+            $loginResponse = $reg_student->studentLogin($student_info);
+            if($loginResponse){
+               if($loginResponse == $request-> get('pass')){
+
+                   $session->set('current_user', $student_info["userId"]);
+                   $newPost = $this->get('newPost');
+
+                   return $this->render('default/dashboard.html.twig',array('displayPost'=> $newPost-> postDisplay()));
+               }
+               else{
+                   return $this->render('default/index.html.twig', array( 'message' => 3 ));
+               }
             }
-            elseif($ActivityType==2){
-                $ActivityObject = $this->get('doctrine_mongodb')
-                    ->getRepository('AppBundle:activity')
-                    ->createQueryBuilder()
-                    ->field('userId')->equals($UserObject->getId())
-                    ->field('NextActivityTime')->gte(new \MongoDate())
-                    ->getQuery()
-                    ->execute();
+            else{
+                return $this->render('default/index.html.twig', array( 'message' => 4 ));
+            }
 
 
+
+
+        }
+        else{
+            return $this->render('default/index.html.twig', array( 'message' => 5 ));
+        }
+
+    }
+    /**
+     * @Route("/portal/dashboard", name="app_default_Dashboard")
+     */
+    public function dashboardAction(Request $request)
+    {
+        $newPost = $this->get('newPost');
+
+
+        return $this-> render('default/dashboard.html.twig',array('displayPost'=> $newPost-> postDisplay()));
+
+    }
+    /**
+     * @Route("/portal/newPost", name="app_default_new_post")
+     */
+    public function newPostAction(Request $request)
+    {
+        if($request->get('post_message') &&
+            ("" != $request->get('post_message'))){
+
+            $newPost = $this->get('newPost');
+            if($newPost-> newPostEntry($request)){
+
+                return $this-> render('default/newpost.html.twig');
+            }
+            else{
+                return $this-> render('default/newpost.html.twig');
             }
 
         }
         else{
-            $ActivityObject =null;
-            $ActivityType=null;
+            return $this-> render('default/newpost.html.twig');
         }
-
-
-
-        return $this->render('default/customerprofile.html.twig',array('ActivityData' => $ActivityObject,'ActivityType'=> $ActivityType));
-
 
 
     }
     /**
-     * @Route("/logout", name="logout")
+     * @Route("/portal/findFriend", name="app_default_find_friend")
      */
-    public function logout(Request $request)
+    public function findFriendAction(Request $request)
+    {
+        $friendList = $this->get('friend');
+
+        if($request->get('friend_request') &&
+            ("" != $request->get('friend_request'))){
+            if($friendList-> friendRequestlistOne($request,$request->get('friend_request'))){
+
+                $friendList-> friendRequest($request);
+                $allUserList = $friendList-> userlist($request);
+                $allRequestList = $friendList-> friendRequestlist($request);
+                return $this-> render('default/findfriend.html.twig',array('allUserList' => $allUserList,
+                                                                                 'allRequestList' => $allRequestList,
+                                                                                 'notification' => '1'));
+            }
+            else{
+
+                $allUserList = $friendList-> userlist($request);
+                $allRequestList = $friendList-> friendRequestlist($request);
+                return $this-> render('default/findfriend.html.twig',array('allUserList' => $allUserList,
+                                                                                 'allRequestList' => $allRequestList,
+                                                                                 'notification' => '2'));
+            }
+
+
+        }
+        else{
+            $allUserList = $friendList-> userlist($request);
+            $allRequestList = $friendList-> friendRequestlist($request);
+            return $this-> render('default/findfriend.html.twig',array('allUserList' => $allUserList,
+                                                                             'allRequestList' => $allRequestList));
+        }
+
+
+    }
+    /**
+     * @Route("/portal/friendRequest", name="app_default_friend_request")
+     */
+    public function friendRequestAction(Request $request)
+    {
+
+        $friendList = $this->get('friend');
+        if($request->get('friend_request_accept') &&
+            ("" != $request->get('friend_request_accept'))){
+            if($friendList-> friendRequestAccept($request,$request->get('friend_request_accept'))){
+
+                $friendList-> friendRequest($request);
+                $allUserList = $friendList-> userlist($request);
+                $allRequestList = $friendList-> friendRequestlist($request);
+                return $this-> render('default/friendrequest.html.twig',array('allRequestList' => $allRequestList, 'notification' => '1'));
+
+            }
+            else{
+
+                return $this-> render('default/friendrequest.html.twig',array('error' => '2'));
+            }
+
+
+        }
+        else{
+            if($allRequestList = $friendList-> myFriendRequestlist($request)){
+
+                return $this-> render('default/friendrequest.html.twig',array('allRequestList' => $allRequestList));
+
+            }
+            else{
+
+                return $this-> render('default/friendrequest.html.twig',array('error' => '1'));
+            }
+        }
+
+
+    }
+    /**
+     * @Route("/portal/friendList", name="app_default_friend_list")
+     */
+    public function friendListAction(Request $request)
+    {
+        $friendList = $this->get('friend');
+        if($allList = $friendList-> myFriendlist($request)){
+
+            return $this-> render('default/friendList.html.twig',array('allList' => $allList));
+
+        }
+        else{
+
+            return $this-> render('default/friendList.html.twig',array('error' => '1'));
+        }
+
+
+    }
+    /**
+     * @Route("/portal/profileUpdate", name="app_default_profile_update")
+     */
+    public function profileUpdateAction(Request $request)
     {
         $session = $request->getSession();
-        $session->clear();
-        return $this->render('default/index.html.twig',  array('AddNotoficaltion' => ""));
+        $studentObject = $this->get('registration');
+        if($request->get('student_name') &&
+            ("" != $request->get('student_name'))){
+
+            if($studentObject-> studentProfileUpdate($request)){
+                return $this-> render('default/profileUpdate.html.twig', array(
+                    'studentObject' => $studentObject-> studentProfileData($session->get('current_user')),
+                    'notification' => '1'));
+            }
+            else{
+                return $this-> render('default/profileUpdate.html.twig', array(
+                    'studentObject' => $studentObject-> studentProfileData($session->get('current_user')),
+                    'notification' => '2'));
+            }
+
+
+        }
+        else{
+            return $this-> render('default/profileUpdate.html.twig', array('studentObject' => $studentObject-> studentProfileData($session->get('current_user'))));
+        }
+    }
+    /**
+     * @Route("/portal/csvUpload", name="app_default_csv_upload")
+     */
+    public function csvUploadAction(Request $request)
+    {
+        $session = $request->getSession();
+        $studentObject = $this->get('csvData');
+
+        if($request->files->get('csv_file')){
+
+            if($studentObject-> csvUpload($request)){
+                return $this-> render('default/csvUpload.html.twig', array(
+                    'notification' => '1'));
+            }
+            else{
+                return $this-> render('default/csvUpload.html.twig', array(
+                    'notification' => '2'));
+            }
+
+
+        }
+        else{
+            return $this-> render('default/csvUpload.html.twig');
+        }
+    }
+    /**
+     * @Route("/portal/displayData", name="app_default_display_data")
+     */
+    public function displayDataAction(Request $request)
+    {
+        $session = $request->getSession();
+        $studentObject = $this->get('csvData');
+        $userObject = $studentObject-> displayDate();
+
+            return $this-> render('default/displayData.html.twig', array('userObject' => $userObject));
     }
 }
-
-

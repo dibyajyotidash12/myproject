@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}
+    Activity Addtion
+{% endblock %}
 {% block menu %}
     <script>
         var theme = $.cookie('protonTheme') || 'default';
@@ -92,6 +94,7 @@
 
 {% block body %}
 
+
     <section class="wrapper scrollable">
         <nav class="user-menu">
             <a href="javascript:;" class="main-menu-access">
@@ -133,16 +136,50 @@
             <div class="clearfix"> </div>
         </section>
         <div class="main-grid">
-            {% if displayPost is defined  %}
-            {% for post in displayPost  %}
-            <div style="border: 1px solid #1e252f;width: 50%;margin-bottom: 30px;">
-                <div style="height: 1000px;"><img src="{{ asset("postimage/" ~ post.postImage) }}" style="width: 100%;"></div>
-                <div >{{ post.postData }}</div>
-                <div>Date:{{ post.postDate|date }}</div>
-            </div>
-            {% endfor %}
-            {% endif %}
+            <div class="agile-grids">
+                <!-- input-forms -->
+                <div class="grids">
 
+                    <div class="panel panel-widget forms-panel">
+                        <div class="progressbar-heading general-heading">
+                            <h4>Friend List:</h4>
+                        </div>
+
+                        <div class="forms">
+                            <h3 class="title1"></h3>
+
+                            <div class="form-three widget-shadow">
+                                <table>
+                                    <tr style="background: #0F9E5E;color: #ffffdd;">
+                                        <td style="padding: 10px;">Student ID</td>
+                                        <td style="padding: 10px;">Student Name</td>
+                                        <td style="padding: 10px;">Student Contact</td>
+                                        <td style="padding: 10px;">Student Mailid</td>
+                                        <td style="padding: 10px;">Student Date of birth</td>
+                                    </tr>
+                                    {% if userObject is defined  %}
+                                    {% for list in userObject  %}
+                                    <tr style="text-align: center;">
+                                        <td>{{ list.studentId }}</td>
+                                        <td>{{ list.studentName }}</td>
+                                        <td>{{ list.studentContact }}</td>
+                                        <td>{{ list.mailId }}</td>
+                                        <td>{{ list.dateOfBirth }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <!-- //input-forms -->
+            </div>
         </div>
         <!-- footer -->
         <div class="footer">
@@ -186,11 +223,4 @@
             });
         });
     </script>
-    <!-- charts -->
-    <script src="{{ asset('js/raphael-min.js') }}"></script>
-    <script src="{{ asset('js/morris.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('css/morris.css') }}">
-    <!-- //charts -->
-    <!--skycons-icons-->
-    <script src="{{ asset('js/skycons.js') }}"></script>
 {% endblock %}

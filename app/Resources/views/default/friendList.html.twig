@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}
+    Activity Addtion
+{% endblock %}
 {% block menu %}
     <script>
         var theme = $.cookie('protonTheme') || 'default';
@@ -92,6 +94,7 @@
 
 {% block body %}
 
+
     <section class="wrapper scrollable">
         <nav class="user-menu">
             <a href="javascript:;" class="main-menu-access">
@@ -133,16 +136,49 @@
             <div class="clearfix"> </div>
         </section>
         <div class="main-grid">
-            {% if displayPost is defined  %}
-            {% for post in displayPost  %}
-            <div style="border: 1px solid #1e252f;width: 50%;margin-bottom: 30px;">
-                <div style="height: 1000px;"><img src="{{ asset("postimage/" ~ post.postImage) }}" style="width: 100%;"></div>
-                <div >{{ post.postData }}</div>
-                <div>Date:{{ post.postDate|date }}</div>
-            </div>
-            {% endfor %}
-            {% endif %}
+            <div class="agile-grids">
+                <!-- input-forms -->
+                <div class="grids">
 
+                    <div class="panel panel-widget forms-panel">
+                        <div class="progressbar-heading general-heading">
+                            <h4>Friend List:</h4>
+                        </div>
+
+                        <div class="forms">
+                            <h3 class="title1"></h3>
+                            {% if error is defined and error =="1"  %}
+                                <div style="margin: 20px;padding: 10px;background: #2CCCAB;color: #ffffdd;">Data Base Error</div>
+                            {% endif %}
+                            {% if notification is defined and notification =="2"  %}
+                                <div style="margin: 20px;padding: 10px;color: #ffffdd;background: #0e8f9f;">Friend Request Already Send</div>
+                            {% endif %}
+                            <div class="form-three widget-shadow">
+                                <div>
+                                    {% if allList is defined  %}
+                                        {% for list in allList  %}
+
+                                            <div style="width:110px;height: 150px;float: left;margin: 20px;">
+                                                <div style="width: 110px;height: 80px;border: 1px solid #d09c0d;"></div>
+                                                <div style="text-align: center;">{{ list.studentObject.studentName }}</div>
+
+                                            </div>
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    <div style="clear: both;"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <!-- //input-forms -->
+            </div>
         </div>
         <!-- footer -->
         <div class="footer">
@@ -186,11 +222,4 @@
             });
         });
     </script>
-    <!-- charts -->
-    <script src="{{ asset('js/raphael-min.js') }}"></script>
-    <script src="{{ asset('js/morris.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('css/morris.css') }}">
-    <!-- //charts -->
-    <!--skycons-icons-->
-    <script src="{{ asset('js/skycons.js') }}"></script>
 {% endblock %}

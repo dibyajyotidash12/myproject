@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}
+    Activity Addtion
+{% endblock %}
 {% block menu %}
     <script>
         var theme = $.cookie('protonTheme') || 'default';
@@ -92,6 +94,7 @@
 
 {% block body %}
 
+
     <section class="wrapper scrollable">
         <nav class="user-menu">
             <a href="javascript:;" class="main-menu-access">
@@ -133,16 +136,49 @@
             <div class="clearfix"> </div>
         </section>
         <div class="main-grid">
-            {% if displayPost is defined  %}
-            {% for post in displayPost  %}
-            <div style="border: 1px solid #1e252f;width: 50%;margin-bottom: 30px;">
-                <div style="height: 1000px;"><img src="{{ asset("postimage/" ~ post.postImage) }}" style="width: 100%;"></div>
-                <div >{{ post.postData }}</div>
-                <div>Date:{{ post.postDate|date }}</div>
-            </div>
-            {% endfor %}
-            {% endif %}
+            <div class="agile-grids">
+                <!-- input-forms -->
+                <div class="grids">
 
+                    <div class="panel panel-widget forms-panel">
+                        <div class="progressbar-heading general-heading">
+                            <h4>New Post :</h4>
+                        </div>
+
+                        <div class="forms">
+                            <h3 class="title1"></h3>
+                            <div class="form-three widget-shadow">
+                                <form class="form-horizontal" action="{{ path('app_default_new_post') }}" method="post" enctype="multipart/form-data">
+
+
+                                    <div class="form-group">
+                                        <label for="focusedinput" class="col-sm-2 control-label">Post Message</label>
+                                        <div class="col-sm-8">
+                                            <textarea  class="form-control1" name="post_message"  style="height: 200px;"  required></textarea>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="focusedinput" class="col-sm-2 control-label">Post Image</label>
+                                        <div class="col-sm-8">
+                                            <input type="file" class="form-control1" name="post_image" id="focusedinput" placeholder="Please Enter Description">
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-sm-12" >
+                                        <button class="btn btn-default w3ls-button" style="margin-left: 40%;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!-- //input-forms -->
+            </div>
         </div>
         <!-- footer -->
         <div class="footer">
@@ -186,11 +222,4 @@
             });
         });
     </script>
-    <!-- charts -->
-    <script src="{{ asset('js/raphael-min.js') }}"></script>
-    <script src="{{ asset('js/morris.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('css/morris.css') }}">
-    <!-- //charts -->
-    <!--skycons-icons-->
-    <script src="{{ asset('js/skycons.js') }}"></script>
 {% endblock %}

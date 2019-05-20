@@ -33,3 +33,19 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+    registration:
+        class: AppBundle\Service\register
+        arguments: ['@service_container']
+        public: true
+    newPost:
+        class: AppBundle\Service\newPost
+        arguments: ['@service_container']
+        public: true
+    friend:
+        class: AppBundle\Service\friend
+        arguments: ['@service_container']
+        public: true
+    csvData:
+        class: AppBundle\Service\csvData
+        arguments: ['@service_container']
+        public: true

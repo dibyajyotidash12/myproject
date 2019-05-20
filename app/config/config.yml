@@ -7,6 +7,8 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    file_directory: '%kernel.root_dir%/../web/postimage'
+    file_directory_csv: '%kernel.root_dir%/../web/csv'
 
 framework:
     #esi: ~
@@ -69,13 +71,14 @@ swiftmailer:
 sensio_framework_extra:
    router:
         annotations: false
-
 doctrine_mongodb:
     connections:
         default:
             server: "%mongodb_server%"
             options: {}
-    default_database: test_database
+    default_database: student_database
     document_managers:
         default:
             auto_mapping: true
+
+
